@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,39 +7,336 @@
   <title>Nooriya</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      height: 100vh;
+      background: #050806;
+      color: #eaffea;
+      font-family: "Courier New", monospace;
+      overflow-x: hidden;
+    }
+
+    nav {
+      height: 80px;
       display: flex;
-      justify-content: center;
       align-items: center;
-      background: #080d18;
-      color: white;
-      font-family: Arial, sans-serif;
+      justify-content: space-between;
+      padding: 0 6%;
+      border-bottom: 1px solid #16351e;
+    }
+
+    .logo {
+      color: #72ff8c;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    nav a {
+      color: #b6c9ba;
+      text-decoration: none;
+      margin-left: 30px;
+      font-size: 14px;
+    }
+
+    nav a:hover {
+      color: #72ff8c;
     }
 
     .hero {
-      text-align: center;
+      min-height: calc(100vh - 80px);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: 5% 8%;
+    }
+
+    .intro {
+      max-width: 600px;
+    }
+
+    .tiny {
+      color: #72ff8c;
+      font-size: 14px;
+      letter-spacing: 2px;
     }
 
     h1 {
-      font-size: 70px;
-      margin: 0;
+      font-family: Arial, sans-serif;
+      font-size: clamp(55px, 8vw, 120px);
+      line-height: .85;
+      margin: 25px 0;
+      letter-spacing: -5px;
     }
 
-    p {
-      font-size: 18px;
-      opacity: 0.65;
+    h1 span {
+      color: #72ff8c;
+    }
+
+    .description {
+      color: #819187;
+      line-height: 1.8;
+      max-width: 480px;
+    }
+
+    .figure-area {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 600px;
+    }
+
+    canvas {
+      width: 500px;
+      height: 600px;
+      cursor: crosshair;
+    }
+
+    .hint {
+      color: #48604e;
+      font-size: 11px;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 800px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .figure-area {
+        min-height: 500px;
+      }
+
+      nav .links {
+        display: none;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <div class="hero">
-    <h1>NOORIYA</h1>
-    <p>Welcome to my little corner of the internet.</p>
+<nav>
+  <div class="logo">FN_01</div>
+
+  <div class="links">
+    <a href="#">ABOUT</a>
+    <a href="#">PROJECTS</a>
+    <a href="#">ENGINEERING</a>
+    <a href="#">ART</a>
   </div>
+</nav>
+
+
+<section class="hero">
+
+  <div class="intro">
+
+    <div class="tiny">
+      // ELECTRICAL ENGINEERING • YEAR 01
+    </div>
+
+    <h1>
+      NOOR<span>IYA</span>
+    </h1>
+
+    <p class="description">
+      Electrical engineering student exploring the space
+      between circuits, code, hardware and creativity.
+    </p>
+
+    <div class="hint">
+      [ move your cursor over the signal → ]
+    </div>
+
+  </div>
+
+
+  <div class="figure-area">
+    <canvas id="figure"></canvas>
+  </div>
+
+</section>
+
+
+<script>
+
+const canvas = document.getElementById("figure");
+const ctx = canvas.getContext("2d");
+
+canvas.width = 500;
+canvas.height = 600;
+
+const particles = [];
+
+const mouse = {
+  x: -1000,
+  y: -1000
+};
+
+
+/* CREATE OUR ELECTRICAL SIGNAL FIGURE */
+
+for (let y = 80; y < 520; y += 10) {
+
+  for (let x = 80; x < 420; x += 10) {
+
+    const center = 250;
+
+    const bodyWidth =
+      120 +
+      Math.sin(y * 0.025) * 45;
+
+    const distance =
+      Math.abs(x - center);
+
+    if (distance < bodyWidth) {
+
+      particles.push({
+
+        homeX: x,
+        homeY: y,
+
+        x: x,
+        y: y,
+
+        vx: 0,
+        vy: 0
+
+      });
+
+    }
+
+  }
+
+}
+
+
+/* MOUSE */
+
+canvas.addEventListener("mousemove", function(e) {
+
+  const rect = canvas.getBoundingClientRect();
+
+  mouse.x =
+    (e.clientX - rect.left) *
+    (canvas.width / rect.width);
+
+  mouse.y =
+    (e.clientY - rect.top) *
+    (canvas.height / rect.height);
+
+});
+
+
+canvas.addEventListener("mouseleave", function() {
+
+  mouse.x = -1000;
+  mouse.y = -1000;
+
+});
+
+
+/* CLICK = ELECTRICAL BURST */
+
+canvas.addEventListener("click", function() {
+
+  particles.forEach(p => {
+
+    p.vx +=
+      (Math.random() - .5) * 15;
+
+    p.vy +=
+      (Math.random() - .5) * 15;
+
+  });
+
+});
+
+
+/* ANIMATION */
+
+function animate() {
+
+  ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+
+  particles.forEach(p => {
+
+    const dx =
+      p.x - mouse.x;
+
+    const dy =
+      p.y - mouse.y;
+
+    const distance =
+      Math.sqrt(dx * dx + dy * dy);
+
+
+    /* CURSOR PUSH */
+
+    if (distance < 80) {
+
+      const force =
+        (80 - distance) / 80;
+
+      p.vx +=
+        (dx / distance) * force * 2;
+
+      p.vy +=
+        (dy / distance) * force * 2;
+
+    }
+
+
+    /* RETURN HOME */
+
+    p.vx +=
+      (p.homeX - p.x) * 0.025;
+
+    p.vy +=
+      (p.homeY - p.y) * 0.025;
+
+
+    p.vx *= 0.88;
+    p.vy *= 0.88;
+
+
+    p.x += p.vx;
+    p.y += p.vy;
+
+
+    /* DRAW CHARACTER */
+
+    ctx.fillStyle = "#72ff8c";
+
+    ctx.font =
+      "10px Courier New";
+
+    ctx.fillText(
+      Math.random() > .5 ? "+" : ".",
+      p.x,
+      p.y
+    );
+
+  });
+
+
+  requestAnimationFrame(animate);
+
+}
+
+
+animate();
+
+</script>
 
 </body>
 </html>
